@@ -5,18 +5,25 @@ import MyDialog from '../components/MyDialog'
 
 function Dashboard() {
     const [datas, setData] = useState();
-    let [isOpen, setIsOpen] = useState(false)
+
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         generatePeople()
     }, [])
+
+    useEffect(() => {
+        if (datas && datas.length > 0) {
+            setLoading(false)
+        }
+    }, [datas])
 
 
     async function getRandomUser() {
         try {
             const response = await fetch('https://randomuser.me/api');
             const data = await response.json();
-            console.log(data)
+
             return data.results;
 
         }
@@ -30,18 +37,13 @@ function Dashboard() {
         for (let i = 0; i < 10; i++) {
             people.push(getRandomUser());
 
+
         }
         const users = await Promise.all(people)
         setData(users);
     }
 
-    function handleClick(user) {
-        if (user) {
-            console.log(user)
-        }
 
-
-    }
 
 
 
@@ -74,39 +76,63 @@ function Dashboard() {
                                     </tr>
                                 </thead>
 
-
-
-
-
-                                {datas && datas.map(d => d.map((dd) => (
-                                    <tbody className='border border-slate-500' key={dd && dd.email}>
+                                {loading ? (
+                                    <tbody className='border border-slate-500' >
                                         <tr className="p-2">
-                                            <td className="px-8 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{dd && dd.name.first}</td>
+                                            <td className="px-8 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Loading</td>
                                             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                                {dd && dd.email}
+                                                Loading..
                                             </td>
                                             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                                {dd && dd.phone}
+                                                Loading..
                                             </td>
                                             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                                <img src={dd && dd.picture.thumbnail} className='' />
+                                                Loading..
                                             </td>
 
                                             <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                                <MyDialog user={dd} />
+                                                Loading..
 
                                             </td>
                                         </tr>
 
 
                                     </tbody>
-                                )))}
+                                ) : (
+                                    datas && datas.map(d => d.map((dd) => (
+                                        <tbody className='border border-slate-500' key={dd && dd.email}>
+                                            <tr className="p-2">
+                                                <td className="px-8 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{dd && dd.name.first}</td>
+                                                <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                                    {dd && dd.email}
+                                                </td>
+                                                <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                                    {dd && dd.phone}
+                                                </td>
+                                                <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                                    <img src={dd && dd.picture.thumbnail} className='' />
+                                                </td>
+
+                                                <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                                    <MyDialog user={dd} />
+
+                                                </td>
+                                            </tr>
+
+
+                                        </tbody>
+                                    )))
+                                )}
+
+
+
 
 
 
 
 
                             </table>
+
                         </div>
                     </div>
                 </div>
